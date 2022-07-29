@@ -1,13 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
-import Image from "next/image";
 import Navbar from "../components/Navbar";
 import styles from "../styles/Marketplace.module.css";
 
-const Marketplace = () => {
-  const [type, setType] = React.useState([]);
+const Marketplace = (props) => {
+  const [cardDetail, setCardDetail] = useState(props.ask_summaries);
+  const [sortType, setSortType] = useState("price_high");
 
-  console.log(type);
+  useEffect(() => {
+    const sortArray = (type) => {
+      const types = {
+        price_high: "price_high",
+        price_low: "price_low",
+        mostRecent: "most-recent",
+        leastRecent: "least-recent",
+      };
+      const sortProperty = types[type];
+      if (sortType === "price_high") {
+        const sorted = [...cardDetail].sort(
+          (a, b) => b[sortProperty] - a[sortProperty]
+        );
+        console.log(sorted, "From Sorted High");
+        setCardDetail(sorted);
+      } else if (sortType === "price_low") {
+        const sorted = [...cardDetail].sort(
+          (a, b) => a[sortProperty] - b[sortProperty]
+        );
+        console.log(sorted, "From Sorted Low");
+        setCardDetail(sorted);
+      } else if (sortType === "most-recent") {
+        const sorted = [...cardDetail]
+          .sort((a, b) => {
+            return (
+              new Date(a.updated).getTime() - new Date(b.updated).getTime()
+            );
+          })
+          .reverse();
+        console.log(sorted, "From Sorted Most-Recent");
+        setCardDetail(sorted);
+      } else if (sortType === "least-recent") {
+        const sorted = [...cardDetail].sort((a, b) => {
+          return new Date(a.updated).getTime() - new Date(b.updated).getTime();
+        });
+        console.log(sorted, "From Sorted least-recent");
+        setCardDetail(sorted);
+      }
+    };
+
+    sortArray(sortType);
+  }, [sortType]);
+
+  console.log(sortType);
 
   return (
     <div>
@@ -22,22 +65,27 @@ const Marketplace = () => {
 
         <div className={styles.pageWrapper}>
           <div className={styles.pageContainer}>
+            {/* Header */}
             <div className={styles.headerWrapper}>
               <h1>Marketplace</h1>
             </div>
+            {/* Sort By */}
             <div className={styles.marketplaceSort}>
               <div className={styles.sortFilter}>
-                <select className={styles.sortSelect}>
-                  <option value="most-price">Ask Price, Descending</option>
-                  <option value="least-price">Ask Price, Ascending</option>
+                <select
+                  onChange={(e) => setSortType(e.target.value)}
+                  className={styles.sortSelect}
+                >
+                  <option value="price_high">Ask Price, Descending</option>
+                  <option value="price_low">Ask Price, Ascending</option>
                   <option value="most-recent">Most Recent</option>
-                  <option value="least-recent" selected="">
-                    Least Recent
-                  </option>
+                  <option value="least-recent">Least Recent</option>
                 </select>
               </div>
             </div>
+
             <div className={styles.marketPlaceContent}>
+              {/* Sidebar */}
               <div className={styles.sideBarContent}>
                 <div className={styles.analytics}>
                   <div className={styles.floorPrice}>
@@ -69,7 +117,6 @@ const Marketplace = () => {
                         <option
                           className={styles.volumeOption}
                           value="allTimeVolume"
-                          selected=""
                         >
                           All Time
                         </option>
@@ -78,6 +125,7 @@ const Marketplace = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className={styles.filterContainer}>
                   <div className={styles.filterContainerHeading}>
                     <h1>Marketplace Filters</h1>
@@ -280,112 +328,44 @@ const Marketplace = () => {
                   </div>
                 </div>
               </div>
-
+              {/* Card Content */}
               <div className={styles.marketContent}>
                 <div className={styles.contentWrapper}>
-                  <div className={styles.productCardContainer}>
-                    <span className={styles.imageContainer}>
-                      <span className={styles.imageC} data-loading="false">
-                        <img
-                          alt="Phil DeVille #60 - Rarity: Ultra Rare, SeriesNumber: Rugrats x Hey Arnold!"
-                          className={styles.productImage}
-                          decoding="async"
-                          height="330"
-                          loading="lazy"
-                          sizes=""
-                          src="https://nickelodeon.xyz/nft-content/media/ORANGE/3a56b837-64e6-49de-b903-7efe9307571c/ef8e8ec1a9854c76346757cd2a03c41942a45f4504cd6b49005a6edf406ce724"
-                          srcSet=""
-                          width="323"
-                        />
-                      </span>
-                    </span>
-                    <div className={styles.productCardContainer}>
-                      <div className={styles.cardTitle}>
-                        <h3>Phil DeVille #60</h3>
+                  {cardDetail.map((e) => {
+                    // console.log(e);
+                    return (
+                      <div
+                        className={styles.productCardContainer}
+                        key={e.nft_data_id}
+                      >
+                        <span className={styles.imageContainer}>
+                          <span className={styles.imageC} data-loading="false">
+                            <img
+                              alt={e.name + e.series + e.rarity}
+                              className={styles.productImage}
+                              decoding="async"
+                              height="300"
+                              loading="lazy"
+                              sizes=""
+                              src={e.images.png.primary.url}
+                              srcSet=""
+                              width="323"
+                            />
+                          </span>
+                        </span>
+                        <div className={styles.productCardContainer}>
+                          <div className={styles.cardTitle}>
+                            <h3>{e.name}</h3>
+                          </div>
+                          <div className={styles.price}>
+                            <span className={styles.ppPrice}>
+                              ${e.price_high}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.price}>
-                        <span className={styles.ppPrice}>$1,500.00</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.productCardContainer}>
-                    <span className={styles.imageContainer}>
-                      <span className={styles.imageC} data-loading="false">
-                        <img
-                          alt="Phil DeVille #60 - Rarity: Ultra Rare, SeriesNumber: Rugrats x Hey Arnold!"
-                          className={styles.productImage}
-                          decoding="async"
-                          height="330"
-                          loading="lazy"
-                          sizes=""
-                          src="https://nickelodeon.xyz/nft-content/media/ORANGE/3a56b837-64e6-49de-b903-7efe9307571c/ef8e8ec1a9854c76346757cd2a03c41942a45f4504cd6b49005a6edf406ce724"
-                          srcSet=""
-                          width="323"
-                        />
-                      </span>
-                    </span>
-                    <div className={styles.productCardContainer}>
-                      <div className={styles.cardTitle}>
-                        <h3>Phil DeVille #60</h3>
-                      </div>
-                      <div className={styles.price}>
-                        <span className={styles.ppPrice}>$1,500.00</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.productCardContainer}>
-                    <span className={styles.imageContainer}>
-                      <span className={styles.imageC} data-loading="false">
-                        <img
-                          alt="Phil DeVille #60 - Rarity: Ultra Rare, SeriesNumber: Rugrats x Hey Arnold!"
-                          className={styles.productImage}
-                          decoding="async"
-                          height="330"
-                          loading="lazy"
-                          sizes=""
-                          src="https://nickelodeon.xyz/nft-content/media/ORANGE/3a56b837-64e6-49de-b903-7efe9307571c/ef8e8ec1a9854c76346757cd2a03c41942a45f4504cd6b49005a6edf406ce724"
-                          srcSet=""
-                          width="323"
-                        />
-                      </span>
-                    </span>
-                    <div className={styles.productCardContainer}>
-                      <div className={styles.cardTitle}>
-                        <h3>Phil DeVille #60</h3>
-                      </div>
-                      <div className={styles.price}>
-                        <span className={styles.ppPrice}>$1,500.00</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.productCardContainer}>
-                    <span className={styles.imageContainer}>
-                      <span className={styles.imageC} data-loading="false">
-                        <img
-                          alt="Phil DeVille #60 - Rarity: Ultra Rare, SeriesNumber: Rugrats x Hey Arnold!"
-                          className={styles.productImage}
-                          decoding="async"
-                          height="330"
-                          loading="lazy"
-                          sizes=""
-                          src="https://nickelodeon.xyz/nft-content/media/ORANGE/3a56b837-64e6-49de-b903-7efe9307571c/ef8e8ec1a9854c76346757cd2a03c41942a45f4504cd6b49005a6edf406ce724"
-                          srcSet=""
-                          width="323"
-                        />
-                      </span>
-                    </span>
-                    <div className={styles.productCardContainer}>
-                      <div className={styles.cardTitle}>
-                        <h3>Phil DeVille #60</h3>
-                      </div>
-                      <div className={styles.price}>
-                        <span className={styles.ppPrice}>$1,500.00</span>
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -399,3 +379,16 @@ const Marketplace = () => {
 };
 
 export default Marketplace;
+
+import fsPromises from "fs/promises";
+import path from "path";
+import Image from "next/image";
+export async function getStaticProps() {
+  const filePath = path.join(process.cwd(), "data.json");
+  const jsonData = await fsPromises.readFile(filePath);
+  const objectData = JSON.parse(jsonData);
+
+  return {
+    props: objectData,
+  };
+}
