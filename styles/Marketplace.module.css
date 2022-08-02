@@ -211,7 +211,7 @@
   justify-content: space-between;
   display: inline-flex;
   font-family: "Roboto", sans-serif;
-
+  cursor: pointer;
   align-items: center;
   font-size: 1rem;
 }
@@ -306,6 +306,7 @@
   font-family: "Roboto", sans-serif;
   font-weight: bold;
   border-radius: 9999px;
+  padding-top: 3px;
 }
 
 .accResetBtn {
@@ -372,6 +373,7 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   max-width: none;
+  cursor: pointer;
 }
 
 .imageContainer {

@@ -2,10 +2,39 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import styles from "../styles/Marketplace.module.css";
+import Link from "next/link";
+import _, { filter } from "lodash";
 
 const Marketplace = (props) => {
   const [cardDetail, setCardDetail] = useState(props.ask_summaries);
   const [sortType, setSortType] = useState("price_high");
+  const [filters, setFilters] = useState([]);
+
+  const applyFilter = (target) => {
+    const newVal = { trait_type: target.name, value: target.id };
+
+    if (target.checked) {
+      setFilters((prev) => [...prev, newVal]);
+    } else {
+      setFilters((prev) => prev.filter((item) => !_.isEqual(item, newVal)));
+    }
+  };
+
+  useEffect(() => {
+    const updated = props.ask_summaries.filter((item) => {
+      let flag = false;
+
+      if (filters.length === 0) return true;
+
+      filters.forEach((element) => {
+        if (_.findIndex(item.attributes, element) !== -1) flag = true;
+      });
+
+      return flag;
+    });
+
+    setCardDetail(updated);
+  }, [filters, props.ask_summaries]);
 
   useEffect(() => {
     const sortArray = (type) => {
@@ -20,13 +49,13 @@ const Marketplace = (props) => {
         const sorted = [...cardDetail].sort(
           (a, b) => b[sortProperty] - a[sortProperty]
         );
-        console.log(sorted, "From Sorted High");
+        // console.log(sorted, "From Sorted High");
         setCardDetail(sorted);
       } else if (sortType === "price_low") {
         const sorted = [...cardDetail].sort(
           (a, b) => a[sortProperty] - b[sortProperty]
         );
-        console.log(sorted, "From Sorted Low");
+        // console.log(sorted, "From Sorted Low");
         setCardDetail(sorted);
       } else if (sortType === "most-recent") {
         const sorted = [...cardDetail]
@@ -36,13 +65,13 @@ const Marketplace = (props) => {
             );
           })
           .reverse();
-        console.log(sorted, "From Sorted Most-Recent");
+        // console.log(sorted, "From Sorted Most-Recent");
         setCardDetail(sorted);
       } else if (sortType === "least-recent") {
         const sorted = [...cardDetail].sort((a, b) => {
           return new Date(a.updated).getTime() - new Date(b.updated).getTime();
         });
-        console.log(sorted, "From Sorted least-recent");
+        // console.log(sorted, "From Sorted least-recent");
         setCardDetail(sorted);
       }
     };
@@ -50,7 +79,11 @@ const Marketplace = (props) => {
     sortArray(sortType);
   }, [sortType]);
 
-  console.log(sortType);
+  console.log(filters);
+
+  const resetFilters = () => {
+    setFilters([]);
+  };
 
   return (
     <div>
@@ -129,52 +162,73 @@ const Marketplace = (props) => {
                 <div className={styles.filterContainer}>
                   <div className={styles.filterContainerHeading}>
                     <h1>Marketplace Filters</h1>
-                    <div className={styles.clearFilter}>
-                      <button type="button" className={styles.clearFilterBtn}>
-                        <span className={styles.closeIcon}>
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M11 1L1 11 11 1z"
-                              fill="currentColor"
-                            ></path>
-                            <path
-                              d="M11 1L1 11"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            ></path>
-                            <path
-                              d="M11 11L1 1l10 10z"
-                              fill="currentColor"
-                            ></path>
-                            <path
-                              d="M11 11L1 1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            ></path>
-                          </svg>
-                        </span>
-                        Reset Filters
-                      </button>
-                    </div>
+
+                    {filters.length !== 0 && (
+                      <div className={styles.clearFilter}>
+                        <button
+                          onClick={() => resetFilters()}
+                          type="button"
+                          className={styles.clearFilterBtn}
+                        >
+                          <span className={styles.closeIcon}>
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M11 1L1 11 11 1z"
+                                fill="currentColor"
+                              ></path>
+                              <path
+                                d="M11 1L1 11"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M11 11L1 1l10 10z"
+                                fill="currentColor"
+                              ></path>
+                              <path
+                                d="M11 11L1 1"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                          </span>
+                          Reset Filters
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className={styles.filterAccordion}>
                     <summary className={styles.accordionHeading}>
                       <span style={{ display: "flex", alignItems: "center" }}>
-                        Type <span className={styles.selectCount}>1</span>
+                        Type{" "}
+                        {filters.length >= 1 && (
+                          <span className={styles.selectCount}>
+                            {filters.length}
+                          </span>
+                        )}
                       </span>
                       <div className={styles.accResetBtn}>
-                        <button type="button">Reset</button>
+                        <button
+                          onClick={() =>
+                            setFilters((prev) =>
+                              prev.filter((item) => !_.includes(item, "Type"))
+                            )
+                          }
+                          type="button"
+                        >
+                          Reset
+                        </button>
                       </div>
                       <svg
                         width="13"
@@ -195,35 +249,58 @@ const Marketplace = (props) => {
 
                     <div className={styles.accordionContent}>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label htmlFor="Type" className={styles.accordionLabel}>
                           <input
                             type="checkbox"
-                            name="Base Pack"
+                            name="Type"
                             className={styles.accordionChheckbox}
                             value="Base Pack"
-                            // onClick={() => setType.push("Base Pack")}
+                            id="Base Pack"
+                            onChange={(e) => applyFilter(e.target)}
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Type",
+                                value: "Base Pack",
+                              }) !== -1
+                            }
                           />
                           Base Pack
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label htmlFor="Type" className={styles.accordionLabel}>
                           <input
                             type="checkbox"
-                            name="Character"
+                            name="Type"
                             className={styles.accordionChheckbox}
                             value="Character"
+                            id="Character"
+                            onChange={(e) => applyFilter(e.target)}
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Type",
+                                value: "Character",
+                              }) !== -1
+                            }
                           />
                           Character
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label htmlFor="Type" className={styles.accordionLabel}>
                           <input
                             type="checkbox"
-                            name="Slime"
+                            name="Type"
                             className={styles.accordionChheckbox}
                             value="Slime"
+                            id="Slime"
+                            onChange={(e) => applyFilter(e.target)}
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Type",
+                                value: "Slime",
+                              }) !== -1
+                            }
                           />
                           Slime
                         </label>
@@ -235,10 +312,25 @@ const Marketplace = (props) => {
                     <summary className={styles.accordionHeading}>
                       <span style={{ display: "flex", alignItems: "center" }}>
                         Slime Score{" "}
-                        <span className={styles.selectCount}>1</span>
+                        {/* {filters.length >= 1 && (
+                          <span className={styles.selectCount}>
+                            {filters.length}
+                          </span>
+                        )} */}
                       </span>
                       <div className={styles.accResetBtn}>
-                        <button type="button">Reset</button>
+                        <button
+                          onClick={() =>
+                            setFilters((prev) =>
+                              prev.filter(
+                                (item) => !_.includes(item, "Slime Score")
+                              )
+                            )
+                          }
+                          type="button"
+                        >
+                          Reset
+                        </button>
                       </div>
                       <svg
                         width="13"
@@ -259,67 +351,133 @@ const Marketplace = (props) => {
 
                     <div className={styles.accordionContent}>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="1"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="1"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="1"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "1",
+                              }) !== -1
+                            }
                           />
                           1
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="2"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="2"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="2"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "2",
+                              }) !== -1
+                            }
                           />
                           2
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="3"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="3"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="3"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "3",
+                              }) !== -1
+                            }
                           />
                           3
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="4"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="4"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="4"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "4",
+                              }) !== -1
+                            }
                           />
                           4
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="5"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="5"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="5"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "5",
+                              }) !== -1
+                            }
                           />
                           5
                         </label>
                       </div>
                       <div>
-                        <label className={styles.accordionLabel}>
+                        <label
+                          htmlFor="Slime Score"
+                          className={styles.accordionLabel}
+                        >
                           <input
                             type="checkbox"
-                            name="10"
+                            name="Slime Score"
                             className={styles.accordionChheckbox}
                             value="10"
+                            onChange={(e) => applyFilter(e.target)}
+                            id="10"
+                            checked={
+                              _.findIndex(filters, {
+                                trait_type: "Slime Score",
+                                value: "10",
+                              }) !== -1
+                            }
                           />
                           10
                         </label>
@@ -334,39 +492,62 @@ const Marketplace = (props) => {
                   {cardDetail.map((e) => {
                     // console.log(e);
                     return (
-                      <div
-                        className={styles.productCardContainer}
+                      <Link
+                        href={"/nft/" + e.nft_data_id}
+                        // href="/nft"
+
+                        title="nft"
                         key={e.nft_data_id}
                       >
-                        <span className={styles.imageContainer}>
-                          <span className={styles.imageC} data-loading="false">
-                            <img
-                              alt={e.name + e.series + e.rarity}
-                              className={styles.productImage}
-                              decoding="async"
-                              height="300"
-                              loading="lazy"
-                              sizes=""
-                              src={e.images.png.primary.url}
-                              srcSet=""
-                              width="323"
-                            />
-                          </span>
-                        </span>
-                        <div className={styles.productCardContainer}>
-                          <div className={styles.cardTitle}>
-                            <h3>{e.name}</h3>
-                          </div>
-                          <div className={styles.price}>
-                            <span className={styles.ppPrice}>
-                              ${e.price_high}
+                        <div
+                          className={styles.productCardContainer}
+                          key={e.nft_data_id}
+                        >
+                          <span className={styles.imageContainer}>
+                            <span
+                              className={styles.imageC}
+                              data-loading="false"
+                            >
+                              <img
+                                alt={e.name + e.series + e.rarity}
+                                className={styles.productImage}
+                                decoding="async"
+                                height="300"
+                                loading="lazy"
+                                sizes=""
+                                src={e.images.png.primary.url}
+                                srcSet=""
+                                width="323"
+                              />
                             </span>
+                          </span>
+                          <div className={styles.productCardContainer}>
+                            <div className={styles.cardTitle}>
+                              <h3>{e.name}</h3>
+                            </div>
+                            <div className={styles.price}>
+                              <span className={styles.ppPrice}>
+                                ${e.price_high}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
+
+                {cardDetail.length === 0 && (
+                  <h1
+                    style={{
+                      color: "white",
+                      textAlign: "center",
+                      width: "100%",
+                    }}
+                  >
+                    No data found
+                  </h1>
+                )}
               </div>
             </div>
           </div>
@@ -382,7 +563,7 @@ export default Marketplace;
 
 import fsPromises from "fs/promises";
 import path from "path";
-import Image from "next/image";
+
 export async function getStaticProps() {
   const filePath = path.join(process.cwd(), "data.json");
   const jsonData = await fsPromises.readFile(filePath);
