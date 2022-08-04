@@ -13,6 +13,8 @@ const Marketplace = (props) => {
     typeCount: 0,
     slimeScore: 0,
   });
+  const [typeActive, setTypeActive] = useState(false);
+  const [slimeActive, setSlimeActive] = useState(false);
 
   const applyFilter = (target) => {
     const newVal = { trait_type: target.name, value: target.id };
@@ -231,7 +233,10 @@ const Marketplace = (props) => {
                   </div>
 
                   <div className={styles.filterAccordion}>
-                    <summary className={styles.accordionHeading}>
+                    <summary
+                      onClick={() => setTypeActive(!typeActive)}
+                      className={styles.accordionHeading}
+                    >
                       <span style={{ display: "flex", alignItems: "center" }}>
                         Type{" "}
                         {counts.typeCount ? (
@@ -271,69 +276,83 @@ const Marketplace = (props) => {
                       </svg>
                     </summary>
 
-                    <div className={styles.accordionContent}>
-                      <div>
-                        <label htmlFor="Type" className={styles.accordionLabel}>
-                          <input
-                            type="checkbox"
-                            name="Type"
-                            className={styles.accordionChheckbox}
-                            value="Base Pack"
-                            id="Base Pack"
-                            onChange={(e) => applyFilter(e.target)}
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Type",
-                                value: "Base Pack",
-                              }) !== -1
-                            }
-                          />
-                          Base Pack
-                        </label>
+                    {typeActive && (
+                      <div className={styles.accordionContent}>
+                        <div>
+                          <label
+                            htmlFor="Type"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Type"
+                              className={styles.accordionChheckbox}
+                              value="Base Pack"
+                              id="Base Pack"
+                              onChange={(e) => applyFilter(e.target)}
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Type",
+                                  value: "Base Pack",
+                                }) !== -1
+                              }
+                            />
+                            Base Pack
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Type"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Type"
+                              className={styles.accordionChheckbox}
+                              value="Character"
+                              id="Character"
+                              onChange={(e) => applyFilter(e.target)}
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Type",
+                                  value: "Character",
+                                }) !== -1
+                              }
+                            />
+                            Character
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Type"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Type"
+                              className={styles.accordionChheckbox}
+                              value="Slime"
+                              id="Slime"
+                              onChange={(e) => applyFilter(e.target)}
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Type",
+                                  value: "Slime",
+                                }) !== -1
+                              }
+                            />
+                            Slime
+                          </label>
+                        </div>
                       </div>
-                      <div>
-                        <label htmlFor="Type" className={styles.accordionLabel}>
-                          <input
-                            type="checkbox"
-                            name="Type"
-                            className={styles.accordionChheckbox}
-                            value="Character"
-                            id="Character"
-                            onChange={(e) => applyFilter(e.target)}
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Type",
-                                value: "Character",
-                              }) !== -1
-                            }
-                          />
-                          Character
-                        </label>
-                      </div>
-                      <div>
-                        <label htmlFor="Type" className={styles.accordionLabel}>
-                          <input
-                            type="checkbox"
-                            name="Type"
-                            className={styles.accordionChheckbox}
-                            value="Slime"
-                            id="Slime"
-                            onChange={(e) => applyFilter(e.target)}
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Type",
-                                value: "Slime",
-                              }) !== -1
-                            }
-                          />
-                          Slime
-                        </label>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className={styles.filterAccordion}>
-                    <summary className={styles.accordionHeading}>
+                    <summary
+                      onClick={() => setSlimeActive(!slimeActive)}
+                      className={styles.accordionHeading}
+                    >
                       <span style={{ display: "flex", alignItems: "center" }}>
                         Slime Score{" "}
                         {counts.slimeScore ? (
@@ -374,141 +393,142 @@ const Marketplace = (props) => {
                         ></path>
                       </svg>
                     </summary>
-
-                    <div className={styles.accordionContent}>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="1"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="1"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "1",
-                              }) !== -1
-                            }
-                          />
-                          1
-                        </label>
+                    {slimeActive && (
+                      <div className={styles.accordionContent}>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="1"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="1"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "1",
+                                }) !== -1
+                              }
+                            />
+                            1
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="2"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="2"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "2",
+                                }) !== -1
+                              }
+                            />
+                            2
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="3"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="3"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "3",
+                                }) !== -1
+                              }
+                            />
+                            3
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="4"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="4"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "4",
+                                }) !== -1
+                              }
+                            />
+                            4
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="5"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="5"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "5",
+                                }) !== -1
+                              }
+                            />
+                            5
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="Slime Score"
+                            className={styles.accordionLabel}
+                          >
+                            <input
+                              type="checkbox"
+                              name="Slime Score"
+                              className={styles.accordionChheckbox}
+                              value="10"
+                              onChange={(e) => applyFilter(e.target)}
+                              id="10"
+                              checked={
+                                _.findIndex(filters, {
+                                  trait_type: "Slime Score",
+                                  value: "10",
+                                }) !== -1
+                              }
+                            />
+                            10
+                          </label>
+                        </div>
                       </div>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="2"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="2"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "2",
-                              }) !== -1
-                            }
-                          />
-                          2
-                        </label>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="3"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="3"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "3",
-                              }) !== -1
-                            }
-                          />
-                          3
-                        </label>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="4"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="4"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "4",
-                              }) !== -1
-                            }
-                          />
-                          4
-                        </label>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="5"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="5"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "5",
-                              }) !== -1
-                            }
-                          />
-                          5
-                        </label>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="Slime Score"
-                          className={styles.accordionLabel}
-                        >
-                          <input
-                            type="checkbox"
-                            name="Slime Score"
-                            className={styles.accordionChheckbox}
-                            value="10"
-                            onChange={(e) => applyFilter(e.target)}
-                            id="10"
-                            checked={
-                              _.findIndex(filters, {
-                                trait_type: "Slime Score",
-                                value: "10",
-                              }) !== -1
-                            }
-                          />
-                          10
-                        </label>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
