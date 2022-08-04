@@ -3,12 +3,16 @@ import Head from "next/head";
 import Navbar from "../components/Navbar";
 import styles from "../styles/Marketplace.module.css";
 import Link from "next/link";
-import _, { filter } from "lodash";
+import _ from "lodash";
 
 const Marketplace = (props) => {
   const [cardDetail, setCardDetail] = useState(props.ask_summaries);
   const [sortType, setSortType] = useState("price_high");
   const [filters, setFilters] = useState([]);
+  const [counts, setCounts] = useState({
+    typeCount: 0,
+    slimeScore: 0,
+  });
 
   const applyFilter = (target) => {
     const newVal = { trait_type: target.name, value: target.id };
@@ -79,7 +83,25 @@ const Marketplace = (props) => {
     sortArray(sortType);
   }, [sortType]);
 
-  console.log(filters);
+  useEffect(() => {
+    let typeCount = 0;
+    let slimeScore = 0;
+    // let someOtherCount = 0;
+
+    const checkInps = document.querySelectorAll("input");
+
+    checkInps.forEach((inp) => {
+      if (inp.name === "Type" && inp.checked) {
+        typeCount++;
+      } else if (inp.name === "Slime Score" && inp.checked) {
+        slimeScore++;
+      }
+    });
+
+    setCounts({ ...counts, typeCount: typeCount, slimeScore: slimeScore });
+  }, [filters, counts]);
+
+  // console.log(filters);
 
   const resetFilters = () => {
     setFilters([]);
@@ -212,23 +234,25 @@ const Marketplace = (props) => {
                     <summary className={styles.accordionHeading}>
                       <span style={{ display: "flex", alignItems: "center" }}>
                         Type{" "}
-                        {filters.length >= 1 && (
+                        {counts.typeCount ? (
                           <span className={styles.selectCount}>
-                            {filters.length}
+                            {counts.typeCount}
                           </span>
-                        )}
+                        ) : null}
                       </span>
                       <div className={styles.accResetBtn}>
-                        <button
-                          onClick={() =>
-                            setFilters((prev) =>
-                              prev.filter((item) => !_.includes(item, "Type"))
-                            )
-                          }
-                          type="button"
-                        >
-                          Reset
-                        </button>
+                        {counts.typeCount ? (
+                          <button
+                            onClick={() =>
+                              setFilters((prev) =>
+                                prev.filter((item) => !_.includes(item, "Type"))
+                              )
+                            }
+                            type="button"
+                          >
+                            Reset
+                          </button>
+                        ) : null}
                       </div>
                       <svg
                         width="13"
@@ -312,25 +336,27 @@ const Marketplace = (props) => {
                     <summary className={styles.accordionHeading}>
                       <span style={{ display: "flex", alignItems: "center" }}>
                         Slime Score{" "}
-                        {/* {filters.length >= 1 && (
+                        {counts.slimeScore ? (
                           <span className={styles.selectCount}>
-                            {filters.length}
+                            {counts.slimeScore}
                           </span>
-                        )} */}
+                        ) : null}
                       </span>
                       <div className={styles.accResetBtn}>
-                        <button
-                          onClick={() =>
-                            setFilters((prev) =>
-                              prev.filter(
-                                (item) => !_.includes(item, "Slime Score")
+                        {counts.slimeScore ? (
+                          <button
+                            onClick={() =>
+                              setFilters((prev) =>
+                                prev.filter(
+                                  (item) => !_.includes(item, "Slime Score")
+                                )
                               )
-                            )
-                          }
-                          type="button"
-                        >
-                          Reset
-                        </button>
+                            }
+                            type="button"
+                          >
+                            Reset
+                          </button>
+                        ) : null}
                       </div>
                       <svg
                         width="13"
